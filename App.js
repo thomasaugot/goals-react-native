@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
   const [enteredText, setEnteredText] = useState("");
@@ -12,30 +13,37 @@ export default function App() {
       alert("Please enter a value");
       return;
     }
-    setCourseGoals((currentCourseGoals) => [...courseGoals, enteredText]);
+    setCourseGoals((currentCourseGoals) => [
+      ...courseGoals,
+      { text: enteredText, key: Math.random().toString() },
+    ]);
     setEnteredText("");
   };
 
   return (
-    <ScrollView>
-      <View style={styles.appContainer}>
-        <View style={styles.topContainer}>
-          <TextInput
-            placeholder="Enter your goal here"
-            style={styles.input}
-            onChangeText={goalInputHandler}
-          />
-          <Button title="Add Goal" onPress={addGoalHandler} />
-        </View>
-        <View style={styles.goalsContainer}>
-          {courseGoals.map((courseGoal, index) => (
-            <Text key={index} style={styles.goalItem}>
-              {courseGoal}
-            </Text>
-          ))}
-        </View>
+    <View style={styles.appContainer}>
+      <View style={styles.topContainer}>
+        <TextInput
+          placeholder="Enter your goal here"
+          style={styles.input}
+          onChangeText={goalInputHandler}
+        />
+        <Button title="Add Goal" onPress={addGoalHandler} />
       </View>
-    </ScrollView>
+
+      <View style={styles.goalsContainer}>
+        <FlatList
+          data={courseGoals}
+          renderItem={(item) => {
+            return (
+              <Text style={styles.goalItem}>
+                <GoalItem text={item.item.text} />
+              </Text>
+            );
+          }}
+        ></FlatList>
+      </View>
+    </View>
   );
 }
 
@@ -65,12 +73,4 @@ const styles = StyleSheet.create({
     height: 40,
   },
   goalsContainer: { flex: 5, marginTop: 30 },
-  goalItem: {
-    padding: 7,
-    backgroundColor: "#8a2be2",
-    color: "white",
-    width: 300,
-    margin: 5,
-    borderRadius: 10,
-  },
 });
